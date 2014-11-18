@@ -5,9 +5,11 @@
 package Airhockey.Main;
 
 import Airhockey.Elements.Bat;
+import Airhockey.Elements.Goal;
 import Airhockey.Elements.LeftEnemyBat;
 import Airhockey.Elements.Puck;
 import Airhockey.Elements.RightEnemyBat;
+import Airhockey.Elements.Triangle;
 import Airhockey.Properties.PropertiesManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -44,6 +46,11 @@ public class Renderer extends Application {
     private Bat bat;
     private LeftEnemyBat leftEnemyBat;
     private RightEnemyBat rightEnemyBat;
+    private Triangle triangle;
+    
+    private Goal redGoal;
+    private Goal blueGoal;
+    private Goal greenGoal;
 
     private Body batBody;
 
@@ -131,11 +138,26 @@ public class Renderer extends Application {
         bat = new Bat(1, 40, 20, Color.RED);
         leftEnemyBat = new LeftEnemyBat(2, 20, 50, Color.BLUE);
         rightEnemyBat = new RightEnemyBat(3, 80, 50, Color.GREEN);
+        triangle = new Triangle(0);
+        
+        int goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.3));
+        redGoal = new Goal(Color.RED, goalLeftTopX, triangle.getBottomLineY(), triangle.getWidth());
 
+        goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() - (triangle.getWidth() * 0.25));
+        int goalLeftTopY = (int) Math.floor(triangle.getBottomLineY() - (triangle.getHeight() * 0.3));
+        greenGoal = new Goal(Color.GREEN, goalLeftTopX, goalLeftTopY, triangle.getWidth());
+
+        goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.85));
+        blueGoal = new Goal(Color.BLUE, goalLeftTopX, goalLeftTopY, triangle.getWidth());
+        
         root.getChildren().add(puck.node);
         root.getChildren().addAll(bat.node, bat.imageNode);
         root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
         root.getChildren().addAll(rightEnemyBat.node, rightEnemyBat.imageNode);
+        root.getChildren().add(triangle.node);
+        root.getChildren().add(redGoal.node);
+        root.getChildren().add(greenGoal.node);
+        root.getChildren().add(blueGoal.node);
     }
 
     public void addLabels() {

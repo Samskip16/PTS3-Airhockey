@@ -44,25 +44,25 @@ public class Login extends JFrame {
     }
 
     public void actionlogin() {
-        blogin.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                String puname = txuser.getText();
-                String ppaswd = pass.getText();
-                
-                if (db.LoginCheckTest(puname, ppaswd)) {
-                    Game game = new Game(new String[100]);
-                    Lobby lobby = new Lobby();
-                    lobby.getChatbox().display();
-                    dispose();
-                } else {
-                    
-                    JOptionPane.showMessageDialog(null, "Wrong Password / Username");
-                    txuser.setText("");
-                    pass.setText("");
-                    txuser.requestFocus();
-                }
-
-            }
-        });
+//        blogin.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent ae) {
+//                String puname = txuser.getText();
+//                String ppaswd = pass.getText();
+//                
+//                if (db.LoginCheckTest(puname, ppaswd)) {
+//                    Game game = new Game(new String[100]);
+//                    Lobby lobby = new Lobby();
+//                    lobby.getChatbox().display();
+//                    dispose();
+//                } else {
+//                    
+//                    JOptionPane.showMessageDialog(null, "Wrong Password / Username");
+//                    txuser.setText("");
+//                    pass.setText("");
+//                    txuser.requestFocus();
+//                }
+//
+//            }
+//        });
     }
 }

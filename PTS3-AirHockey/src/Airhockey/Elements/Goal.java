@@ -1,16 +1,15 @@
 package Airhockey.Elements;
 
-import com.sun.javafx.geom.Arc2D;
-import com.sun.javafx.geom.Line2D;
-import com.sun.javafx.geom.Shape;
-import com.sun.javafx.geom.ShapePair;
-import java.awt.Color;
+import com.sun.javafx.geom.Vec2d;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Rotate;
+import org.jbox2d.common.Vec2;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,18 +20,17 @@ import javafx.scene.shape.Line;
  *
  * @author Sam
  */
-public class Goal extends Rectangle {
+public class Goal {
 
     private int topLeftX;
     private int topLeftY;
     private int width;
     private int height;
-    private double rotation = 0.0;
-    private Line collisionLine;
-
-    AffineTransform rotationMatrix;
+    private double rotation;
 
     private Color color;
+    
+    public Node node;
 
 //    private double angle;
 //    private Shape rotatedRect;
@@ -44,42 +42,16 @@ public class Goal extends Rectangle {
         width = (int) Math.floor((double) triangleWidth * 0.4);
         height = (int) Math.floor((double) triangleWidth * 0.04);
 
-        Line line = new Line();
-
-        double inCollisionLine[] = new double[4];
-        inCollisionLine[0] = topLeftX;
-        inCollisionLine[1] = topLeftY;
-        inCollisionLine[2] = topLeftX + width;
-        inCollisionLine[3] = topLeftY;
-
-        double outCollisionLine[] = new double[4];
-        double something[] = new double[20];
-
-        AffineTransform collisionLineMatrix = new AffineTransform(inCollisionLine);
-
-//        collisionLine = new Line(inCollisionLine[0], inCollisionLine[1], inCollisionLine[2], inCollisionLine[3]);
-//        
-//        collisionLine = (Line) collisionLineMatrix.createTransformedShape((java.awt.Shape) collisionLine);
         if (color == Color.RED) {
             rotation = 0.0;
-            rotationMatrix = AffineTransform.getRotateInstance(rotation, topLeftX + 1, topLeftY + 1);
-            collisionLineMatrix = rotationMatrix;
 
         } else if (color == Color.GREEN) {
-            rotation = 2.13;
-            rotationMatrix = AffineTransform.getRotateInstance(rotation, topLeftX + width, topLeftY + 1);
-            collisionLineMatrix = rotationMatrix;
+            rotation = -60;
         } else if (color == Color.BLUE) {
-            rotation = 4.16;
-            rotationMatrix = AffineTransform.getRotateInstance(rotation, topLeftX + 1, topLeftY + 1);
-            collisionLineMatrix = rotationMatrix;
+            rotation = 60;
         }
-
-        System.out.print(collisionLineMatrix.getType());
-
-        collisionLineMatrix.transform(inCollisionLine, 0, outCollisionLine, 0, 2);
-
-        collisionLine = new Line(outCollisionLine[0], outCollisionLine[1], outCollisionLine[2], outCollisionLine[3]);
+        
+        node = create();
     }
 
     public int getTopLeftX() {
@@ -90,30 +62,41 @@ public class Goal extends Rectangle {
         return topLeftX + width;
     }
 
-    public void draw(Graphics graphics) {
-        //Graphics2D g2d = (Graphics2D) graphics;
-        Graphics2D gGoal = (Graphics2D) graphics.create();
-        gGoal.setColor(color);        
-
-        gGoal.drawLine((int) collisionLine.getStartX(), (int) collisionLine.getStartY(), (int) collisionLine.getEndX(), (int) collisionLine.getEndY());
-//        rotation -= 0.001;
-//        rotationMatrix = AffineTransform.getRotateInstance(rotation, topLeftX, topLeftY); 
-        gGoal.transform(rotationMatrix);
-        gGoal.drawLine(topLeftX, topLeftY, topLeftX + width, topLeftY);
-
-        // gGoal.drawLine((int) collisionLine.getStartX(), (int) collisionLine.getStartY(), (int) collisionLine.getEndX(), (int) collisionLine.getEndX());
-        //gGoal.draw((Shape)collisionLine);
-        gGoal.fillRect(topLeftX, topLeftY, width, height);
-        //g2d.draw(rotatedRect);
-    }
-
-    @Override
-    public boolean intersectsLine(double d, double d1, double d2, double d3) {
-        return collisionLine.contains(d, d1) || collisionLine.contains(d2, d3);
-        //return collisionLine.getStartX() < d && d1 <= collisionLine.getStartX();
-    }
-
-    public boolean customIntersect(double d, double d1, double d2, double d3) {
-        return collisionLine.contains(d, d1) || collisionLine.contains(d2, d3);
+    private Node create(){
+        // create the vectors for the goal used in physics engine
+        Vec2 A = new Vec2(topLeftX, topLeftY);
+        Vec2 B = new Vec2((float)(topLeftX + width), topLeftY);
+        Vec2 C = new Vec2((float)(topLeftX + width),(float) topLeftY - height);
+        Vec2 D = new Vec2(topLeftX,(float) topLeftY - height);
+        
+        // create the goal used to draw the goal
+        Group rect = new Group();
+        Line AB = new Line(A.x, A.y, B.x, B.y);
+        Line BC = new Line(C.x, C.y, B.x, B.y);
+        Line CD = new Line(C.x, C.y, D.x, D.y);
+        Line AD = new Line(A.x, A.y, D.x, D.y);
+        
+        // changes the colour of the lines
+        AB.setFill(color);
+        BC.setFill(color);
+        CD.setFill(color);
+        AD.setFill(color);
+        
+        // adds the lines to the group
+        rect.getChildren().add(AB);
+        rect.getChildren().add(BC);
+        rect.getChildren().add(CD);
+        rect.getChildren().add(AD);
+        
+        // create ancherpoint and sets the rotation for the goal
+        Rotate rotationMatrix = new Rotate(rotation, A.x, A.y);
+        
+        // rotates line AB
+        rect.getTransforms().add(rotationMatrix);
+        
+        // change colour
+        
+        
+        return rect;
     }
 }
