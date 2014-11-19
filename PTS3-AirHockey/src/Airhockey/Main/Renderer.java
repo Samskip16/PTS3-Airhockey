@@ -11,9 +11,9 @@ import Airhockey.Elements.Puck;
 import Airhockey.Elements.RightEnemyBat;
 import Airhockey.Elements.Triangle;
 import Airhockey.Properties.PropertiesManager;
+import javafx.animation.FillTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -25,11 +25,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -43,12 +42,13 @@ import org.jbox2d.dynamics.Body;
  */
 public class Renderer {
 
-    //private Stage primaryStage;
+    private Stage primaryStage;
     private boolean canImpulsBall = true;
     private boolean batSideMovementLeft = false;
     private boolean batSideMovementRight = false;
 
     private Popup popupWindow;
+    private Timeline timeline;
 
     public static final int LEFT = 1;
     public static final int RIGHT = 2;
@@ -80,17 +80,18 @@ public class Renderer {
     private Game game;
 
     public Renderer(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         game = new Game(this);
-        start2(primaryStage);
+        start();
 
     }
 
-    public void start2(Stage primaryStage) {
-        //this.primaryStage = primaryStage;
-
+    public void start() {
         primaryStage.setTitle("Airhockey");
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
+        primaryStage.setWidth(Utils.WIDTH);
+        primaryStage.setHeight(Utils.HEIGHT);
 
         KeyListener keyListener = new KeyListener(this);
         PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
@@ -118,7 +119,7 @@ public class Renderer {
         /**
          * Set ActionEvent and duration to the KeyFrame. The ActionEvent is trigged when KeyFrame execution is over.
          */
-        final Timeline timeline = new Timeline();
+        timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
         Duration duration = Duration.seconds(1.0 / 60.0); // Set duration for frame.
         MyHandler eventHandler = new MyHandler();
@@ -150,8 +151,9 @@ public class Renderer {
         testButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //game.setGoal(bat, leftEnemyBat);
+                //game.setGoal(bat, leftEnemyBat);               
                 showPopupWindow();
+                stop();
             }
         });
 
@@ -370,35 +372,47 @@ public class Renderer {
     }
 
     public void showPopupWindow() {
-        final Stage myDialog = new Stage();
-        myDialog.initModality(Modality.WINDOW_MODAL);
+        final Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(primaryStage.getScene().getWindow());
 
-        Button okButton = new Button("CLOSE");
+        Button okButton = new Button("Close");
         okButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent arg0) {
-                myDialog.close();
+                dialogStage.close();
             }
-
         });
 
         Label label = new Label("GAME OVER");
-        label.setFont(Font.font("Roboto", 28.0));
+        label.setFont(Font.font("Roboto", 24.0));
         label.setTextFill(Color.web("#009587"));
-        label.setPadding(new Insets(0, 0, 10, 0));
+        label.setPadding(new Insets(0, 0, 20, 0));
         label.relocate(100, 10);
 
         VBox vBox = new VBox();
-
         vBox.getChildren().add(label);
         vBox.getChildren().add(okButton);
-        vBox.minWidth(200);
-        vBox.minHeight(150);
-        //vBox.padding(new Insets(10));
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setPadding(new Insets(20, 40, 20, 40));
 
-        Scene myDialogScene = new Scene(vBox);
-        myDialog.setScene(myDialogScene);
-        myDialog.show();
+        Scene dialogScene = new Scene(vBox);
+        dialogStage.setScene(dialogScene);
+        dialogStage.show();
+    }
+
+    public void stop() {
+        timeline.stop();
+
+        Rectangle rect = new Rectangle(0, 0, 0, 0);
+        rect.setWidth(Utils.WIDTH);
+        rect.setHeight(Utils.HEIGHT);
+        rect.setArcWidth(50);
+
+        root.getChildren().add(rect);
+
+        FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
+        ft.playFromStart();
     }
 }
