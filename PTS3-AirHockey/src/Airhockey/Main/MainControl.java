@@ -52,7 +52,7 @@ public class MainControl {
     }
 
     public void createNewGame(String[] args) {
-        Application.launch(Renderer.class, args);
+        Application.launch(Login.class, args);
     }
 
     public void joinGame(Game game) {

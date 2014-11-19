@@ -1,7 +1,9 @@
 package Airhockey.Main;
 
-import javax.swing.*;
 import java.awt.event.*;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javax.swing.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -12,35 +14,39 @@ import java.awt.event.*;
  *
  * @author martijn
  */
-
-public class Login extends JFrame {
+public class Login extends Application {
 
     Database db;
-    
+
     JButton blogin = new JButton("Login");
     JPanel panel = new JPanel();
     JTextField txuser = new JTextField(15);
     JPasswordField pass = new JPasswordField(15);
 
-    Login() {
-        super("Login Autentification");
-        this.db = new Database();
-        setSize(300, 200);
-        setLocation(500, 280);
-        panel.setLayout(null);
+    @Override
+    public void start(Stage primaryStage) {
+        Renderer r = new Renderer(primaryStage);
+    }
 
-        txuser.setBounds(70, 30, 150, 20);
-        pass.setBounds(70, 65, 150, 20);
-        blogin.setBounds(110, 100, 80, 20);
-
-        panel.add(blogin);
-        panel.add(txuser);
-        panel.add(pass);
-
-        getContentPane().add(panel);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
-        actionlogin();
+    public Login() {
+//        super("Login Autentification");
+//        this.db = new Database();
+//        setSize(300, 200);
+//        setLocation(500, 280);
+//        panel.setLayout(null);
+//
+//        txuser.setBounds(70, 30, 150, 20);
+//        pass.setBounds(70, 65, 150, 20);
+//        blogin.setBounds(110, 100, 80, 20);
+//
+//        panel.add(blogin);
+//        panel.add(txuser);
+//        panel.add(pass);
+//
+//        getContentPane().add(panel);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setVisible(true);
+//        actionlogin();
     }
 
     public void actionlogin() {

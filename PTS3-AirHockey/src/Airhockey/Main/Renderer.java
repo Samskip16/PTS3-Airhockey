@@ -16,14 +16,22 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.jbox2d.common.Vec2;
@@ -33,11 +41,14 @@ import org.jbox2d.dynamics.Body;
  *
  * @author Sam
  */
-public class Renderer extends Application {
+public class Renderer {
 
+    //private Stage primaryStage;
     private boolean canImpulsBall = true;
     private boolean batSideMovementLeft = false;
     private boolean batSideMovementRight = false;
+
+    private Popup popupWindow;
 
     public static final int LEFT = 1;
     public static final int RIGHT = 2;
@@ -47,7 +58,7 @@ public class Renderer extends Application {
     private LeftEnemyBat leftEnemyBat;
     private RightEnemyBat rightEnemyBat;
     private Triangle triangle;
-    
+
     private Goal redGoal;
     private Goal blueGoal;
     private Goal greenGoal;
@@ -55,6 +66,7 @@ public class Renderer extends Application {
     private Body batBody;
 
     private Button startButton;
+    private Button testButton;
     private final Group root = new Group();
     //private final Group root2 = new Group();
 
@@ -67,12 +79,15 @@ public class Renderer extends Application {
 
     private Game game;
 
-    public Renderer() {
+    public Renderer(Stage primaryStage) {
         game = new Game(this);
+        start2(primaryStage);
+
     }
 
-    @Override
-    public void start(Stage primaryStage) {
+    public void start2(Stage primaryStage) {
+        //this.primaryStage = primaryStage;
+
         primaryStage.setTitle("Airhockey");
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
@@ -82,7 +97,7 @@ public class Renderer extends Application {
         PropertiesManager.saveProperty("REB-Difficulty", "HARD");
 
         //Create a group for holding all objects on the screen
-        final Scene scene = new Scene(root, Utils.WIDTH, Utils.HEIGHT, Color.GRAY);
+        final Scene scene = new Scene(root, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
         //final Scene scene2 = new Scene(root2, Utils.WIDTH, Utils.HEIGHT, Color.WHITE);
 
         Canvas canvas = new Canvas(Utils.WIDTH, Utils.HEIGHT);
@@ -127,10 +142,32 @@ public class Renderer extends Application {
             }
         });
 
+        //Create button to start simulation.
+        testButton = new Button();
+        testButton.setLayoutX((Utils.WIDTH / 20));
+        testButton.setLayoutY((70));
+        testButton.setText("Test");
+        testButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                //game.setGoal(bat, leftEnemyBat);
+                showPopupWindow();
+            }
+        });
+
         root.getChildren().add(startButton);
+        root.getChildren().add(testButton);
+
+        setUpGame();
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public void setUpGame() {
+        game.addBatToPlayer(1, bat);
+        game.addBatToPlayer(2, leftEnemyBat);
+        game.addBatToPlayer(3, rightEnemyBat);
     }
 
     private void addItems() {
@@ -139,7 +176,7 @@ public class Renderer extends Application {
         leftEnemyBat = new LeftEnemyBat(2, 20, 50, Color.BLUE);
         rightEnemyBat = new RightEnemyBat(3, 80, 50, Color.GREEN);
         triangle = new Triangle(0);
-        
+
         int goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.3));
         redGoal = new Goal(Color.RED, goalLeftTopX, triangle.getBottomLineY(), triangle.getWidth());
 
@@ -149,7 +186,7 @@ public class Renderer extends Application {
 
         goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.85));
         blueGoal = new Goal(Color.BLUE, goalLeftTopX, goalLeftTopY, triangle.getWidth());
-        
+
         root.getChildren().add(puck.node);
         root.getChildren().addAll(bat.node, bat.imageNode);
         root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
@@ -161,19 +198,28 @@ public class Renderer extends Application {
     }
 
     public void addLabels() {
-        player1NameLabel = new Label("Player1:");
-        player2NameLabel = new Label("Player2:");
-        player3NameLabel = new Label("Player3:");
+        popupWindow = new Popup();
+        popupWindow.setX(300);
+        popupWindow.setY(200);
+        popupWindow.getContent().addAll(new Circle(25, 25, 50, Color.AQUAMARINE));
+
+        player1NameLabel = new Label("PLAYER1: ");
+        player2NameLabel = new Label("PLAYER2: ");
+        player3NameLabel = new Label("PLAYER3: ");
         player1ScoreLabel = new Label("20");
         player2ScoreLabel = new Label("20");
         player3ScoreLabel = new Label("20");
 
-        player1NameLabel.setFont(Font.font("Arial Black", 24.0));
-        player2NameLabel.setFont(Font.font("Arial Black", 24.0));
-        player3NameLabel.setFont(Font.font("Arial Black", 24.0));
-        player1ScoreLabel.setFont(Font.font("Arial Black", 24.0));
-        player2ScoreLabel.setFont(Font.font("Arial Black", 24.0));
-        player3ScoreLabel.setFont(Font.font("Arial Black", 24.0));
+        player1NameLabel.setFont(Font.font("Roboto", 24.0));
+        player2NameLabel.setFont(Font.font("Roboto", 24.0));
+        player3NameLabel.setFont(Font.font("Roboto", 24.0));
+        player1ScoreLabel.setFont(Font.font("Roboto", 24.0));
+        player2ScoreLabel.setFont(Font.font("Roboto", 24.0));
+        player3ScoreLabel.setFont(Font.font("Roboto", 24.0));
+
+        player1NameLabel.setTextFill(Color.web("#009587"));
+        player2NameLabel.setTextFill(Color.web("#009587"));
+        player3NameLabel.setTextFill(Color.web("#009587"));
 
         player1NameLabel.relocate(870, 10);
         player2NameLabel.relocate(870, 40);
@@ -296,10 +342,13 @@ public class Renderer extends Application {
                 player3NameLabel.setText(value);
                 break;
             case "PLAYER1_SCORE":
+                player1ScoreLabel.setText(value);
                 break;
             case "PLAYER2_SCORE":
+                player2ScoreLabel.setText(value);
                 break;
             case "PLAYER3_SCORE":
+                player3ScoreLabel.setText(value);
                 break;
         }
     }
@@ -318,5 +367,38 @@ public class Renderer extends Application {
         gc.setLineWidth(3);
 
         gc.strokeOval(centerPointX - 100, centerPointY - 100, 200, 200);
+    }
+
+    public void showPopupWindow() {
+        final Stage myDialog = new Stage();
+        myDialog.initModality(Modality.WINDOW_MODAL);
+
+        Button okButton = new Button("CLOSE");
+        okButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent arg0) {
+                myDialog.close();
+            }
+
+        });
+
+        Label label = new Label("GAME OVER");
+        label.setFont(Font.font("Roboto", 28.0));
+        label.setTextFill(Color.web("#009587"));
+        label.setPadding(new Insets(0, 0, 10, 0));
+        label.relocate(100, 10);
+
+        VBox vBox = new VBox();
+
+        vBox.getChildren().add(label);
+        vBox.getChildren().add(okButton);
+        vBox.minWidth(200);
+        vBox.minHeight(150);
+        //vBox.padding(new Insets(10));
+
+        Scene myDialogScene = new Scene(vBox);
+        myDialog.setScene(myDialogScene);
+        myDialog.show();
     }
 }

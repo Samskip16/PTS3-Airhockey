@@ -1,8 +1,9 @@
 package Airhockey.Main;
 
+import Airhockey.Elements.Bat;
+import Airhockey.User.Player;
 import Airhockey.User.Spectator;
 import Airhockey.User.User;
-import Airhockey.User.Player;
 import java.util.ArrayList;
 import javafx.application.Application;
 
@@ -17,8 +18,8 @@ import javafx.application.Application;
  */
 public class Game {
 
-    private int numberOfRoundsPlayed;
     private int id;
+    private int round = 10;
     private Player owner;
     private Renderer renderer;
     private ArrayList<Player> players;
@@ -29,12 +30,15 @@ public class Game {
 
     public Game(Renderer renderer) {
         this.renderer = renderer;
+        players = new ArrayList<>();
+        addPlayer(new Player(1));
+        addPlayer(new Player(2));
+        addPlayer(new Player(3));
         //scoreCalculator = new ScoreCalculator(player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
     }
 
-    public void startGame() {
-        //renderer.startGame();
-        //startButton.setEnabled(false);
+    public void addPlayer(Player player) {
+        players.add(player);
     }
 
     public void startGame(Player owner) {
@@ -45,9 +49,32 @@ public class Game {
         throw new UnsupportedOperationException();
     }
 
-    public void setGoal(Player player) {
-        player.setScore();
-        //player1ScoreLabel.setText("Player1: " + player.getScore());
-        //startButton.setEnabled(true);
+    public void addBatToPlayer(int playerId, Bat bat) {
+        for (Player player : players) {
+            if (player.getId() == playerId) {
+                player.setBat(bat);
+            }
+        }
+    }
+
+    public void setGoal(Bat batWhoMadeGoal, Bat batWhoFailed) {
+        for (Player player : players) {
+            if (player.getBat() == batWhoMadeGoal) {
+                player.upScore();
+                renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+            } else if (player.getBat() == batWhoFailed) {
+                player.downScore();
+                renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+            }
+        }
+
+        round--;
+        if (round == 0) {
+            stop();
+        }
+    }
+
+    private void stop() {
+
     }
 }

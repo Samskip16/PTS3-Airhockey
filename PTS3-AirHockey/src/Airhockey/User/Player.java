@@ -1,5 +1,7 @@
 package Airhockey.User;
 
+import Airhockey.Elements.Bat;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -9,19 +11,42 @@ package Airhockey.User;
  *
  * @author Roel
  */
-public class Player extends User {
+public class Player {
 
-    private int score;
+    private int id;
+    private int score = 20;
+    private Bat bat;
 
-    public int getScore() {
-        return score;
+    public Player(int id) {
+        this.id = id;
+    }
+
+    public void upScore() {
+        score++;
+    }
+
+    public void downScore() {
+        score--;
+    }
+
+    public void setBat(Bat bat) {
+        this.bat = bat;
     }
 
     public void setScore(int score) {
         this.score = score;
     }
-    
-    public void setScore(){
-        score++;
+
+    public Bat getBat() {
+        return bat;
     }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getId() {
+        return id;
+    }
+
 }

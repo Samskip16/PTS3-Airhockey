@@ -1,14 +1,9 @@
 package Airhockey.Elements;
 
 import Airhockey.Main.Utils;
-import java.awt.image.BufferedImage;
-import java.net.URL;
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -98,7 +93,7 @@ public class Bat {
         } else if (color.equals(Color.BLUE)) {
             image = new Image(getClass().getResourceAsStream("Images/BlueBatSmall.png"), diameter + 10, diameter + 10, false, false);
         } else {
-            image = new Image(getClass().getResourceAsStream("Images/GreenBatSmall.png"), diameter + 10, diameter + 10, false, false);
+            image = new Image(getClass().getResourceAsStream("Images/GreenBatSmall2.png"), diameter + 10, diameter + 10, false, false);
         }
         ImageView imageView = new ImageView(image);
         imageView.relocate(Utils.toPixelPosX(positionX) - radius - 5, Utils.toPixelPosY(positionY) - radius - 5);
