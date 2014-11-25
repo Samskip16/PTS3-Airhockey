@@ -16,6 +16,11 @@ public class ChatboxLine {
     private String text;
     private User user;
 
+    public ChatboxLine(String text, User user) {
+        this.text = text;
+        this.user = user;
+    }
+    
     public User getUser() {
         return user;
     }
