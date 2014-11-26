@@ -85,6 +85,7 @@ public class Renderer {
     public Renderer(Stage primaryStage) {
         this.primaryStage = primaryStage;
         game = new Game(this);
+        
         start();
 
     }
