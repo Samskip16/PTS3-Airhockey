@@ -29,6 +29,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -58,6 +59,8 @@ public class Renderer {
     private LeftEnemyBat leftEnemyBat;
     private RightEnemyBat rightEnemyBat;
     private Triangle triangle;
+    private Triangle triangleLeft;
+    private Triangle triangleRight;
 
     private Goal redGoal;
     private Goal blueGoal;
@@ -92,6 +95,7 @@ public class Renderer {
         primaryStage.setResizable(false);
         primaryStage.setWidth(Utils.WIDTH);
         primaryStage.setHeight(Utils.HEIGHT);
+        primaryStage.centerOnScreen();
 
         KeyListener keyListener = new KeyListener(this);
         PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
@@ -177,26 +181,44 @@ public class Renderer {
         bat = new Bat(1, 40, 20, Color.RED);
         leftEnemyBat = new LeftEnemyBat(2, 20, 50, Color.BLUE);
         rightEnemyBat = new RightEnemyBat(3, 80, 50, Color.GREEN);
-        triangle = new Triangle(0);
+        //triangle = new Triangle(0, 20, 65, 80, 65);
+        triangle = new Triangle(0, 5, 10, 100, 10);
+        triangleLeft = new Triangle(0, 5, 11, 39, 90);
+        triangleRight = new Triangle(0, 41, 90, 60, 11);
 
-        int goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.3));
-        redGoal = new Goal(Color.RED, goalLeftTopX, triangle.getBottomLineY(), triangle.getWidth());
-
-        goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() - (triangle.getWidth() * 0.25));
-        int goalLeftTopY = (int) Math.floor(triangle.getBottomLineY() - (triangle.getHeight() * 0.3));
-        greenGoal = new Goal(Color.GREEN, goalLeftTopX, goalLeftTopY, triangle.getWidth());
-
-        goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.85));
-        blueGoal = new Goal(Color.BLUE, goalLeftTopX, goalLeftTopY, triangle.getWidth());
-
+        //int goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.3));
+//        redGoal = new Goal(Color.RED, goalLeftTopX, triangle.getBottomLineY(), triangle.getWidth());
+//
+//        goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() - (triangle.getWidth() * 0.25));
+//        int goalLeftTopY = (int) Math.floor(triangle.getBottomLineY() - (triangle.getHeight() * 0.3));
+//        greenGoal = new Goal(Color.GREEN, goalLeftTopX, goalLeftTopY, triangle.getWidth());
+//
+        //goalLeftTopX = (int) Math.floor(triangle.getLeftBottomX() + (triangle.getWidth() * 0.85));
+        //blueGoal = new Goal(Color.BLUE, goalLeftTopX, goalLeftTopY, triangle.getWidth());
         root.getChildren().add(puck.node);
         root.getChildren().addAll(bat.node, bat.imageNode);
         root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
         root.getChildren().addAll(rightEnemyBat.node, rightEnemyBat.imageNode);
         root.getChildren().add(triangle.node);
-        root.getChildren().add(redGoal.node);
-        root.getChildren().add(greenGoal.node);
-        root.getChildren().add(blueGoal.node);
+        root.getChildren().add(triangleLeft.node);
+        root.getChildren().add(triangleRight.node);
+
+        System.out.println("Xpix(posx0): " + Utils.toPosX(0));
+        System.out.println("Xpix(posx1): " + Utils.toPosX(1));
+        System.out.println("Ypix(posy0): " + Utils.toPosY(0));
+        System.out.println("Ypix(posy1): " + Utils.toPosY(1));
+        System.out.println("");
+        System.out.println("Xpix(posxWIDTH): " + Utils.toPosX(Utils.WIDTH));
+        System.out.println("Xpix(posxHEIGHT): " + Utils.toPosY(Utils.HEIGHT));
+        System.out.println("");
+        System.out.println("Xpos(pix0): " + Utils.toPixelPosX(0));
+        System.out.println("Xpos(pix1): " + Utils.toPixelPosX(1));
+        System.out.println("Ypos(piy0): " + Utils.toPixelPosY(0));
+        System.out.println("Ypos(piy1): " + Utils.toPixelPosY(1));
+
+//        root.getChildren().add(redGoal.node);
+//        root.getChildren().add(greenGoal.node);
+//        root.getChildren().add(blueGoal.node);
     }
 
     public void addLabels() {
@@ -212,23 +234,23 @@ public class Renderer {
         player2ScoreLabel = new Label("20");
         player3ScoreLabel = new Label("20");
 
-        player1NameLabel.setFont(Font.font("Roboto", 24.0));
-        player2NameLabel.setFont(Font.font("Roboto", 24.0));
-        player3NameLabel.setFont(Font.font("Roboto", 24.0));
-        player1ScoreLabel.setFont(Font.font("Roboto", 24.0));
-        player2ScoreLabel.setFont(Font.font("Roboto", 24.0));
-        player3ScoreLabel.setFont(Font.font("Roboto", 24.0));
+        player1NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        player2NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        player3NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        player1ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        player2ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        player3ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
 
         player1NameLabel.setTextFill(Color.web("#009587"));
         player2NameLabel.setTextFill(Color.web("#009587"));
         player3NameLabel.setTextFill(Color.web("#009587"));
 
-        player1NameLabel.relocate(870, 10);
-        player2NameLabel.relocate(870, 40);
-        player3NameLabel.relocate(870, 70);
-        player1ScoreLabel.relocate(990, 10);
-        player2ScoreLabel.relocate(990, 40);
-        player3ScoreLabel.relocate(990, 70);
+        player1NameLabel.relocate(850, 10);
+        player2NameLabel.relocate(850, 40);
+        player3NameLabel.relocate(850, 70);
+        player1ScoreLabel.relocate(970, 10);
+        player2ScoreLabel.relocate(970, 40);
+        player3ScoreLabel.relocate(970, 70);
 
         root.getChildren().addAll(player1NameLabel, player2NameLabel, player3NameLabel, player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
     }
@@ -375,6 +397,7 @@ public class Renderer {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(primaryStage.getScene().getWindow());
+        dialogStage.centerOnScreen();
 
         Button okButton = new Button("Close");
         okButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -403,8 +426,6 @@ public class Renderer {
     }
 
     public void stop() {
-        timeline.stop();
-
         Rectangle rect = new Rectangle(0, 0, 0, 0);
         rect.setWidth(Utils.WIDTH);
         rect.setHeight(Utils.HEIGHT);
@@ -414,5 +435,8 @@ public class Renderer {
 
         FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
         ft.playFromStart();
+
+        timeline.stop();
+
     }
 }

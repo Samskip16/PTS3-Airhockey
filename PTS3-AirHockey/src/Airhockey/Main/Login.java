@@ -1,9 +1,11 @@
 package Airhockey.Main;
 
+import java.awt.Point;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -65,13 +67,14 @@ public class Login extends Application {
         pf.setText("password");
         Button btnLogin = new Button("Login");
         final Label lblMessage = new Label();
+        
 
         //Adding Nodes to GridPane layout
         gridPane.add(lblUserName, 0, 0);
         gridPane.add(txtUserName, 1, 0);
         gridPane.add(lblPassword, 0, 1);
         gridPane.add(pf, 1, 1);
-        gridPane.add(btnLogin, 2, 1);
+        gridPane.add(btnLogin, 1, 2);
         gridPane.add(lblMessage, 1, 2);
 
         //Reflection for gridPane
@@ -81,14 +84,17 @@ public class Login extends Application {
 
         //DropShadow effect 
         DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(5);
-        dropShadow.setOffsetY(5);
+        dropShadow.setOffsetX(2);
+        dropShadow.setOffsetY(2);
 
         //Adding text and DropShadow effect to it
-        Text text = new Text("  Air Hockey");
-        text.setFont(Font.font("Roboto", FontWeight.BOLD, 28));
-        text.setEffect(dropShadow);
+        Text text = new Text("AIR HOCKEY");
+        text.setFont(Font.font("Roboto", FontWeight.BOLD, 34));
+        //text.setEffect(dropShadow);
 
+        text.setFill(Color.web("#009587"));
+
+        //lblPassword.setEffect(r);
         //Adding text to HBox
         hb.getChildren().add(text);
 
@@ -97,17 +103,21 @@ public class Login extends Application {
 
             @Override
             public void handle(Event event) {
-                String checkUser = txtUserName.getText().toString();
-                String checkPw = pf.getText().toString();
-                if (checkUser.equals("User1") && checkPw.equals("PW")) {
-                    Renderer r = new Renderer(primaryStage);
-                } else {
-                    lblMessage.setText("Incorrect user or pw.");
-                    lblMessage.setTextFill(Color.RED);
-                }
-                txtUserName.setText("");
-                pf.setText("");
+//                String checkUser = txtUserName.getText().toString();
+//                String checkPw = pf.getText().toString();
+//                if (checkUser.equals("User1") && checkPw.equals("PW")) {
+//                    Renderer r = new Renderer(primaryStage);
+//                } else {
+//                    lblMessage.setText("Incorrect user or pw.");
+//                    lblMessage.setTextFill(Color.RED);
+//                }
+//                txtUserName.setText("");
+//                pf.setText("");
+
+                primaryStage.close();
+                Renderer r = new Renderer(primaryStage);
             }
+
         });
 
         //Add HBox and GridPane layout to BorderPane Layout
