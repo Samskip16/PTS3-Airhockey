@@ -115,7 +115,8 @@ public class Login extends Application {
 //                pf.setText("");
 
                 primaryStage.close();
-                Renderer r = new Renderer(primaryStage);
+                Lobby l = new Lobby(primaryStage);
+                //Renderer r = new Renderer(primaryStage);
             }
 
         });
