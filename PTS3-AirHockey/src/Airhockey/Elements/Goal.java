@@ -1,15 +1,27 @@
 package Airhockey.Elements;
 
+import Airhockey.Main.Utils;
 import com.sun.javafx.geom.Vec2d;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -24,79 +36,78 @@ public class Goal {
 
     private int topLeftX;
     private int topLeftY;
-    private int width;
-    private int height;
+    private int width = 200;
+    private int height = 40;
     private double rotation;
 
     private Color color;
-    
+
     public Node node;
+    public Node collisionNode;
 
 //    private double angle;
 //    private Shape rotatedRect;
-    public Goal(Color color, int topLeftX, int topLeftY, int triangleWidth) {
+    public Goal(String color, int topLeftX, int topLeftY) {
         this.topLeftX = topLeftX;
         this.topLeftY = topLeftY;
-        this.color = color;
 
-        width = (int) Math.floor((double) triangleWidth * 0.4);
-        height = (int) Math.floor((double) triangleWidth * 0.04);
-
-        if (color == Color.RED) {
-            rotation = 0.0;
-
-        } else if (color == Color.GREEN) {
-            rotation = -60;
-        } else if (color == Color.BLUE) {
-            rotation = 60;
+//        width = (int) Math.floor((double) triangleWidth * 0.4);
+//        height = (int) Math.floor((double) triangleWidth * 0.04);
+        if (color == "RED") {
+            rotation = 0;
+            this.color = Color.web("#dd4540");
+        } else if (color == "BLUE") {
+            rotation = -55;
+            this.color = Color.web("#4d7fdd");
+        } else {
+            rotation = 55;
+            this.color = Color.web("#009587");
         }
-        
-        node = create();
+
+        this.node = createRect();
+        this.collisionNode = createCollisionNode();
     }
 
-    public int getTopLeftX() {
-        return topLeftX;
-    }
+    private Node createRect() {
+        Rectangle r = new Rectangle();
 
-    public int getTopRightX() {
-        return topLeftX + width;
-    }
+        //r.getTransforms().add(new Rotate(90, topLeftX + (width / 2), topLeftY + (height / 2)));
+        //r.getTransforms().add(new Rotate(rotation, topLeftX, topLeftY));
+        r.setWidth(width);
+        r.setHeight(height);
+        r.setFill(color);
+        r.setLayoutX(topLeftX);
+        r.setLayoutY(topLeftY);
 
-    private Node create(){
-        // create the vectors for the goal used in physics engine
-        Vec2 A = new Vec2(topLeftX, topLeftY);
-        Vec2 B = new Vec2((float)(topLeftX + width), topLeftY);
-        Vec2 C = new Vec2((float)(topLeftX + width),(float) topLeftY - height);
-        Vec2 D = new Vec2(topLeftX,(float) topLeftY - height);
-        
-        // create the goal used to draw the goal
-        Group rect = new Group();
-        Line AB = new Line(A.x, A.y, B.x, B.y);
-        Line BC = new Line(C.x, C.y, B.x, B.y);
-        Line CD = new Line(C.x, C.y, D.x, D.y);
-        Line AD = new Line(A.x, A.y, D.x, D.y);
-        
-        // changes the colour of the lines
-        AB.setFill(color);
-        BC.setFill(color);
-        CD.setFill(color);
-        AD.setFill(color);
-        
-        // adds the lines to the group
-        rect.getChildren().add(AB);
-        rect.getChildren().add(BC);
-        rect.getChildren().add(CD);
-        rect.getChildren().add(AD);
-        
-        // create ancherpoint and sets the rotation for the goal
-        Rotate rotationMatrix = new Rotate(rotation, A.x, A.y);
-        
-        // rotates line AB
-        rect.getTransforms().add(rotationMatrix);
-        
+        RotateTransition t = new RotateTransition(Duration.millis(1), r);
+        t.setByAngle(rotation);
+        t.setAutoReverse(false);
+        t.play();
+
+        System.out.println("Value: " + Utils.toPixelPosX(topLeftY));
+        System.out.println("Value2: " + (int) Math.floor(Utils.toPixelPosX(topLeftY)));
+        System.out.println("LAYOUT: " + Utils.pixelEngineToFrame((int) Math.floor(Utils.toPixelPosX(topLeftY))));
+
+//        Shape s = (Shape) r;
+//        AffineTransform t = s.getr
+//        t.rotate(Math.toRadians(thetaDegrees), shape.getCenter().x, shape.getCenter().y);
+//        shape.setAffineTransform(t);
         // change colour
-        
-        
-        return rect;
+        return r;
+    }
+
+    public Node createCollisionNode() {
+        Vec2 TopLeft = new Vec2(topLeftX, topLeftY + 20);
+        Vec2 TopRight = new Vec2((float) (topLeftX + width), topLeftY + 20);
+
+        Line line = new Line(TopLeft.x, TopLeft.y, TopRight.x, TopRight.y);
+        line.setStroke(Color.WHITE);
+
+        RotateTransition t = new RotateTransition(Duration.millis(1), line);
+        t.setByAngle(rotation);
+        t.setAutoReverse(false);
+        t.play();
+
+        return line;
     }
 }

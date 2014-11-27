@@ -91,10 +91,10 @@ public class Utils {
     }
 
     public static int pixelFrameToEngine(int value) {
-        return value + HEIGHT;
+        return HEIGHT - value;
     }
 
     public static int pixelEngineToFrame(int value) {
-        return value - HEIGHT;
+        return HEIGHT - value;
     }
 }
