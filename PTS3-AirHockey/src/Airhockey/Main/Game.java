@@ -1,8 +1,8 @@
 package Airhockey.Main;
 
+import Airhocky.Utils.ScoreCalculator;
 import Airhockey.Elements.Bat;
 import Airhockey.User.Player;
-import Airhockey.User.Spectator;
 import Airhockey.User.User;
 import java.util.ArrayList;
 import javafx.application.Application;
@@ -23,7 +23,7 @@ public class Game {
     private Player owner;
     private Renderer renderer;
     private ArrayList<Player> players;
-    private ArrayList<Spectator> spectators;
+//    private ArrayList<Spectator> spectators;
     private Result result;
     private Chatbox chatbox;
     private ScoreCalculator scoreCalculator;
@@ -31,13 +31,15 @@ public class Game {
     public Game(Renderer renderer) {
         this.renderer = renderer;
         players = new ArrayList<>();
-        addPlayer(new Player(1));
-        addPlayer(new Player(2));
-        addPlayer(new Player(3));
+
+        addPlayer(new User("Henk"));
+        addPlayer(new User("Piet"));
+        addPlayer(new User("DienMam"));
         //scoreCalculator = new ScoreCalculator(player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(User user) {
+        Player player = new Player(players.size() + 1, user);
         players.add(player);
     }
 
@@ -46,16 +48,16 @@ public class Game {
     }
 
     public void leaveGame(User user) {
-                /*zodra een speler het speelveld van een spel, waarvoor inmiddels ten minste 1 ronde is
-                 voltooid, vroegtijdig verlaat, bijvoorbeeld vanwege een slechte internetverbinding1
-                 ,
-                 wordt het spel als beëindigd verklaard. De eindscore S wordt dan als volgt
-                 gecorrigeerd:
-                 S := (S-20)*10/n + 20
-                 waarbij n het aantal gespeelde ronden voorstelt (1≤n≤10).
-                 Als de ratingscore voor de weggevallen speler beter is dan zijn huidige rating, wordt
-                 de ratingscore genegeerd. Als de ratingscore van een nog aanwezige speler slechter is
-                 dan zijn/haar huidige rating, wordt deze ratingscore ook niet verwerkt*/
+        /*zodra een speler het speelveld van een spel, waarvoor inmiddels ten minste 1 ronde is
+         voltooid, vroegtijdig verlaat, bijvoorbeeld vanwege een slechte internetverbinding1
+         ,
+         wordt het spel als beëindigd verklaard. De eindscore S wordt dan als volgt
+         gecorrigeerd:
+         S := (S-20)*10/n + 20
+         waarbij n het aantal gespeelde ronden voorstelt (1≤n≤10).
+         Als de ratingscore voor de weggevallen speler beter is dan zijn huidige rating, wordt
+         de ratingscore genegeerd. Als de ratingscore van een nog aanwezige speler slechter is
+         dan zijn/haar huidige rating, wordt deze ratingscore ook niet verwerkt*/
     }
 
     public void addBatToPlayer(int playerId, Bat bat) {
@@ -67,23 +69,37 @@ public class Game {
     }
 
     public void setGoal(Bat batWhoMadeGoal, Bat batWhoFailed) {
+
         for (Player player : players) {
-            if (player.getBat() == batWhoMadeGoal) {
-                player.upScore();
-                renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
-            } else if (player.getBat() == batWhoFailed) {
-                player.downScore();
-                renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+            if (batWhoMadeGoal == null) {
+                if (player.getBat() == batWhoFailed) {
+                    player.downScore();
+                    renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                }
+            } else {
+                if (player.getBat() == batWhoMadeGoal) {
+                    player.upScore();
+                    renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                } else if (player.getBat() == batWhoFailed) {
+                    player.downScore();
+                    renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                }
             }
         }
 
         round--;
         if (round == 0) {
             stop();
+        } else {
+            renderer.resetRound(round);
         }
     }
 
-    private void stop() {
+    public String getUsername(int id) {
+        return players.get(id - 1).user.getUsername();
+    }
 
+    private void stop() {
+        //renderer.resetRound();
     }
 }

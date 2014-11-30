@@ -1,6 +1,6 @@
 package Airhockey.Elements;
 
-import Airhockey.Main.Utils;
+import Airhocky.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -10,6 +10,7 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
 /*
@@ -37,6 +38,7 @@ public class Bat {
     public Node imageNode;
 
     private BodyType bodyType;
+    private Body body;
 
     public Bat(int id, float positionX, float positionY, Color color) {
         this.id = id;
@@ -76,11 +78,12 @@ public class Bat {
         fd.friction = 0.0f;
         fd.restitution = 0.0f;
 
+
         /*
          * Virtual invisible JBox2D body of bat. Bodies have velocity and position. 
          * Forces, torques, and impulses can be applied to these bodies.
          */
-        Body body = Utils.world.createBody(bd);
+        body = Utils.world.createBody(bd);
         body.createFixture(fd);
         bat.setUserData(body);
         return bat;
@@ -113,5 +116,13 @@ public class Bat {
 
     public float getPositionY() {
         return positionY;
+    }
+
+    public Fixture getFixture() {
+        return body.getFixtureList();
+    }
+
+    public Body getBody() {
+        return body;
     }
 }

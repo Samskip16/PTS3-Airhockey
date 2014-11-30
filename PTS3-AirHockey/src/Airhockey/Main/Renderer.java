@@ -9,16 +9,17 @@ import Airhockey.Elements.Goal;
 import Airhockey.Elements.LeftEnemyBat;
 import Airhockey.Elements.Puck;
 import Airhockey.Elements.RightEnemyBat;
-import Airhockey.Elements.Triangle;
+import Airhockey.Elements.TriangleLine;
 import Airhockey.Properties.PropertiesManager;
-import java.util.concurrent.Callable;
+import Airhocky.Utils.KeyListener;
+import Airhocky.Utils.Utils;
+import java.util.Random;
+import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
 import javafx.animation.KeyFrame;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -36,13 +37,17 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.transform.Affine;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Fixture;
+import org.jbox2d.dynamics.contacts.Contact;
 
 /**
  *
@@ -50,7 +55,7 @@ import org.jbox2d.dynamics.Body;
  */
 public class Renderer {
 
-    private Stage primaryStage;
+    private final Stage primaryStage;
     private boolean canImpulsBall = true;
     private boolean batSideMovementLeft = false;
     private boolean batSideMovementRight = false;
@@ -65,15 +70,16 @@ public class Renderer {
     private Bat bat;
     private LeftEnemyBat leftEnemyBat;
     private RightEnemyBat rightEnemyBat;
-    private Triangle triangle;
-    private Triangle triangleLeft;
-    private Triangle triangleRight;
+    private TriangleLine triangle;
+    private TriangleLine triangleLeft;
+    private TriangleLine triangleRight;
 
     private Goal redGoal;
     private Goal blueGoal;
     private Goal greenGoal;
 
     private Body batBody;
+    private Body puckBody;
 
     private Button startButton;
     private Button testButton;
@@ -87,11 +93,15 @@ public class Renderer {
     private Label player2ScoreLabel;
     private Label player3ScoreLabel;
 
-    private Game game;
+    private final Game game;
 
-    Rectangle r;
+    private Shape redGoalShape;
+    private Shape blueGoalShape;
+    private Shape greenGoalShape;
+    private Shape puckShape;
 
-    //ObservableBooleanValue colliding;
+    private Bat lastHittedBat;
+
     public Renderer(Stage primaryStage) {
         this.primaryStage = primaryStage;
         game = new Game(this);
@@ -123,10 +133,10 @@ public class Renderer {
         addItems();
         addLabels();
 
-        //Add ground to the application, this is where balls will land
-        Utils.addGround(100, 10);
-
-//        //Add left and right walls so balls will not move outside the viewing area.
+//        //Add ground to the application, this is where balls will land
+//        Utils.addGround(100, 10);
+//
+////        //Add left and right walls so balls will not move outside the viewing area.
         Utils.addWall(0, 100, 1, 100); //Left wall
         Utils.addWall(99, 100, 1, 100); //Right wall
         Utils.addWall(0, 90, 100, 1);
@@ -178,8 +188,42 @@ public class Renderer {
 
         setUpGame();
 
+        Utils.world.setContactListener(new ContactListenerZ());
+
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private class ContactListenerZ implements ContactListener {
+
+        @Override
+        public void beginContact(Contact contact) {
+            Fixture fA = contact.getFixtureA();
+            Fixture fB = contact.getFixtureB();
+
+            if (fA == puck.getFixture() || fB == puck.getFixture()) {
+                if (fA == bat.getFixture() || fB == bat.getFixture()) {
+                    lastHittedBat = bat;
+                } else if (fA == leftEnemyBat.getFixture() || fB == leftEnemyBat.getFixture()) {
+                    lastHittedBat = leftEnemyBat;
+                } else if (fA == rightEnemyBat.getFixture() || fB == rightEnemyBat.getFixture()) {
+                    lastHittedBat = rightEnemyBat;
+                }
+            }
+        }
+
+        @Override
+        public void endContact(Contact contact) {
+        }
+
+        @Override
+        public void preSolve(Contact contact, Manifold oldManifold) {
+        }
+
+        @Override
+        public void postSolve(Contact contact, ContactImpulse impulse) {
+        }
+
     }
 
     public void setUpGame() {
@@ -189,14 +233,18 @@ public class Renderer {
     }
 
     private void addItems() {
-        puck = new Puck(50, 30);
+        puck = new Puck(50, 50);
         bat = new Bat(1, 40, 20, Color.RED);
-        leftEnemyBat = new LeftEnemyBat(2, 20, 50, Color.BLUE);
-        rightEnemyBat = new RightEnemyBat(3, 80, 50, Color.GREEN);
+        leftEnemyBat = new LeftEnemyBat(2, 35, 50, Color.BLUE);
+        rightEnemyBat = new RightEnemyBat(3, 65, 50, Color.GREEN);
+//
+//        triangle = new TriangleLine(0, 2.5f, 10, 100, 10);
+//        triangleLeft = new TriangleLine(0, 2.5f, 11, 44, 90);
+//        triangleRight = new TriangleLine(0, 46, 90, 90, 11);
 
-        triangle = new Triangle(0, 2.5f, 10, 100, 10);
-        triangleLeft = new Triangle(0, 2.5f, 11, 44, 90);
-        triangleRight = new Triangle(0, 46, 90, 90, 11);
+        triangle = new TriangleLine(0, 5f, 10, 80, 10);
+        triangleLeft = new TriangleLine(0, 5f, 11, 44, 95);
+        triangleRight = new TriangleLine(0, 46, 95, 85, 11);
 
         redGoal = new Goal("RED", 420, 670);
         blueGoal = new Goal("BLUE", 176, 380);
@@ -216,6 +264,11 @@ public class Renderer {
         root.getChildren().addAll(bat.node, bat.imageNode);
         root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
         root.getChildren().addAll(rightEnemyBat.node, rightEnemyBat.imageNode);
+
+        redGoalShape = (Shape) redGoal.collisionNode;
+        blueGoalShape = (Shape) blueGoal.collisionNode;
+        greenGoalShape = (Shape) greenGoal.collisionNode;
+        puckShape = (Shape) puck.node;
 
         System.out.println("Xpix(posx0): " + Utils.toPosX(0));
         System.out.println("Xpix(posx1): " + Utils.toPosX(1));
@@ -237,9 +290,9 @@ public class Renderer {
         popupWindow.setY(200);
         popupWindow.getContent().addAll(new Circle(25, 25, 50, Color.AQUAMARINE));
 
-        player1NameLabel = new Label("PLAYER1: ");
-        player2NameLabel = new Label("PLAYER2: ");
-        player3NameLabel = new Label("PLAYER3: ");
+        player1NameLabel = new Label(game.getUsername(1) + ": ");
+        player2NameLabel = new Label(game.getUsername(2) + ": ");
+        player3NameLabel = new Label(game.getUsername(3) + ": ");
         player1ScoreLabel = new Label("20");
         player2ScoreLabel = new Label("20");
         player3ScoreLabel = new Label("20");
@@ -251,8 +304,8 @@ public class Renderer {
         player2ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         player3ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
 
-        player1NameLabel.setTextFill(Color.web("#009587"));
-        player2NameLabel.setTextFill(Color.web("#009587"));
+        player1NameLabel.setTextFill(Color.web("#dd4540"));
+        player2NameLabel.setTextFill(Color.web("#4d7fdd"));
         player3NameLabel.setTextFill(Color.web("#009587"));
 
         player1NameLabel.relocate(850, 10);
@@ -266,19 +319,16 @@ public class Renderer {
     }
 
     public void checkGoal() {
-        //final Shape greenGoalShape = (Shape) redGoal.collisionNode;
-        final Shape blueGoalShape = (Shape) blueGoal.collisionNode;
-        final Shape greenGoalShape = (Shape) greenGoal.collisionNode;
-        final Shape puckShape = (Shape) puck.node;
-
-        //Shape redGoalIntersect = Shape.intersect(redGoalShape, puckShape);
+        Shape redGoalIntersect = Shape.intersect(redGoalShape, puckShape);
         Shape blueGoalIntersect = Shape.intersect(blueGoalShape, puckShape);
         Shape greenGoalIntersect = Shape.intersect(greenGoalShape, puckShape);
 
-        if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(rightEnemyBat, leftEnemyBat);
+        if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
+            game.setGoal(lastHittedBat, bat);
+        } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
+            game.setGoal(lastHittedBat, leftEnemyBat);
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(rightEnemyBat, leftEnemyBat);
+            game.setGoal(lastHittedBat, leftEnemyBat);
         }
     }
 
@@ -290,11 +340,18 @@ public class Renderer {
             Utils.world.step(1.0f / 60.f, 8, 3);
 
             //Move balls to the new position computed by JBox2D
-            Body puckBody = (Body) puck.node.getUserData();
+            puckBody = (Body) puck.node.getUserData();
             batBody = (Body) bat.node.getUserData();
 
             if (canImpulsBall) {
-                puckBody.applyLinearImpulse(new Vec2(-10.0f, -12.0f), puckBody.getWorldCenter());
+                Random randomizer = new Random();
+                int horizontalMovement = randomizer.nextInt(8) - 4;
+                horizontalMovement = (horizontalMovement > -1) ? horizontalMovement + 8 : horizontalMovement - 8;
+
+                int verticalMovement = randomizer.nextInt(8) - 4;
+                verticalMovement = (verticalMovement > -1) ? verticalMovement + 8 : verticalMovement - 8;
+
+                puckBody.applyLinearImpulse(new Vec2((float) horizontalMovement, (float) verticalMovement), puckBody.getWorldCenter());
                 canImpulsBall = false;
             }
 
@@ -347,13 +404,13 @@ public class Renderer {
         float leftEnemyBatPositionY = Utils.toPixelPosY(leftEnemyBatBody.getPosition().y);
 
         if (puckPositionY > leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY < 400) {
+            if (leftEnemyBatPositionY < 600) {
                 leftEnemyBat.moveDown(puckBody);
             } else {
                 leftEnemyBat.stop();
             }
         } else if (puckPositionY < leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY > 200) {
+            if (leftEnemyBatPositionY > 300) {
                 leftEnemyBat.moveUp(puckBody);
             } else {
                 leftEnemyBat.stop();
@@ -368,13 +425,13 @@ public class Renderer {
         float rightEnemyBatPositionY = Utils.toPixelPosY(rightEnemyBatBody.getPosition().y);
 
         if (puckPositionY - 1 > rightEnemyBatPositionY + 1) {
-            if (rightEnemyBatPositionY < 400) {
+            if (rightEnemyBatPositionY < 600) {
                 rightEnemyBat.moveDown(puckBody);
             } else {
                 rightEnemyBat.stop();
             }
         } else if (puckPositionY < rightEnemyBatPositionY) {
-            if (rightEnemyBatPositionY > 200) {
+            if (rightEnemyBatPositionY > 300) {
                 rightEnemyBat.moveUp(puckBody);
             } else {
                 rightEnemyBat.stop();
@@ -415,13 +472,13 @@ public class Renderer {
 //        gc.strokeLine(centerPointX, centerPointY, centerPointX, LEFT);
 //        gc.strokeLine(centerPointX, centerPointY, 0, Utils.HEIGHT);
 //        gc.strokeLine(centerPointX, centerPointY, Utils.WIDTH, Utils.HEIGHT);
-        gc.setStroke(Color.RED);
+        gc.setStroke(Color.web("#dd4540"));
         gc.setLineWidth(3);
 
         gc.strokeOval(centerPointX - 100, centerPointY - 100, 200, 200);
     }
 
-    public void showPopupWindow() {
+    private void showPopupWindow() {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(primaryStage.getScene().getWindow());
@@ -453,9 +510,83 @@ public class Renderer {
         dialogStage.show();
     }
 
-    public void resetRound() {
-        timeline.pause();
-        startButton.setDisable(false);
+    public void resetRound(int round) {
+        timeline.stop();
+
+        Utils.world.destroyBody(puckBody);
+        Utils.world.destroyBody(batBody);
+        Utils.world.destroyBody(leftEnemyBat.getBody());
+        Utils.world.destroyBody(rightEnemyBat.getBody());
+
+        root.getChildren().removeAll(puck.node);
+        root.getChildren().removeAll(bat.node, bat.imageNode);
+        root.getChildren().removeAll(leftEnemyBat.node, leftEnemyBat.imageNode);
+        root.getChildren().removeAll(rightEnemyBat.node, rightEnemyBat.imageNode);
+
+        newRoundTransition(round);
+
+        puck = new Puck(50, 50);
+        bat = new Bat(1, 40, 20, Color.RED);
+        leftEnemyBat = new LeftEnemyBat(2, 35, 50, Color.BLUE);
+        rightEnemyBat = new RightEnemyBat(3, 65, 50, Color.GREEN);
+
+        puckShape = (Shape) puck.node;
+        root.getChildren().add(puck.node);
+        root.getChildren().addAll(bat.node, bat.imageNode);
+        root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
+        root.getChildren().addAll(rightEnemyBat.node, rightEnemyBat.imageNode);
+    }
+
+    private void newRoundTransition(int round) {
+        Label roundLabel = new Label();
+        roundLabel.setText("Round " + round);
+        roundLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        roundLabel.setTextFill(Color.web("#009587"));
+        roundLabel.relocate(460, 340);
+
+        root.getChildren().add(roundLabel);
+
+        FadeTransition fadeTransition
+                = new FadeTransition(Duration.millis(1000), roundLabel);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+
+        ScaleTransition scaleTransition
+                = new ScaleTransition(Duration.millis(1000), roundLabel);
+        scaleTransition.setFromX(2f);
+        scaleTransition.setFromY(2f);
+        scaleTransition.setToX(8f);
+        scaleTransition.setToY(8f);
+
+        Rectangle rect = new Rectangle(0, 0, 0, 0);
+        rect.setWidth(Utils.WIDTH);
+        rect.setHeight(Utils.HEIGHT);
+        rect.setArcWidth(50);
+        rect.setFill(Color.web("#e0e0e0"));
+
+        root.getChildren().add(rect);
+
+        FillTransition ft = new FillTransition(Duration.millis(5000), rect, Color.web("#e0e0e0"), Color.TRANSPARENT);
+
+        ParallelTransition parallelTransition = new ParallelTransition();
+        parallelTransition.getChildren().addAll(
+                fadeTransition,
+                scaleTransition,
+                ft
+        );
+
+        parallelTransition.playFromStart();
+        parallelTransition.setOnFinished(new OnAnimationCompletionListener());
+    }
+
+    private class OnAnimationCompletionListener implements EventHandler<ActionEvent> {
+
+        @Override
+        public void handle(ActionEvent t) {
+            canImpulsBall = true;
+            timeline.playFromStart();
+        }
+
     }
 
     public void stop() {
@@ -470,6 +601,5 @@ public class Renderer {
         ft.playFromStart();
 
         timeline.stop();
-
     }
 }

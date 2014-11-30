@@ -1,6 +1,6 @@
 package Airhockey.Elements;
 
-import Airhockey.Main.Utils;
+import Airhocky.Utils.Utils;
 import Airhockey.Properties.PropertiesManager;
 import javafx.scene.paint.Color;
 import org.jbox2d.common.Vec2;

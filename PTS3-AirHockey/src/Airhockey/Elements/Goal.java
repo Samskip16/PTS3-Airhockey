@@ -1,33 +1,19 @@
 package Airhockey.Elements;
 
-import Airhockey.Main.Utils;
-import com.sun.javafx.geom.Vec2d;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import Airhocky.Utils.Utils;
 import javafx.animation.RotateTransition;
-import javafx.animation.TranslateTransition;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
-import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
-import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 /**
  *
  * @author Sam
@@ -45,23 +31,25 @@ public class Goal {
     public Node node;
     public Node collisionNode;
 
-//    private double angle;
-//    private Shape rotatedRect;
     public Goal(String color, int topLeftX, int topLeftY) {
         this.topLeftX = topLeftX;
         this.topLeftY = topLeftY;
 
 //        width = (int) Math.floor((double) triangleWidth * 0.4);
 //        height = (int) Math.floor((double) triangleWidth * 0.04);
-        if (color == "RED") {
-            rotation = 0;
-            this.color = Color.web("#dd4540");
-        } else if (color == "BLUE") {
-            rotation = -55;
-            this.color = Color.web("#4d7fdd");
-        } else {
-            rotation = 55;
-            this.color = Color.web("#009587");
+        switch (color) {
+            case "RED":
+                rotation = 0;
+                this.color = Color.web("#dd4540");
+                break;
+            case "BLUE":
+                rotation = -58;
+                this.color = Color.web("#4d7fdd");
+                break;
+            default:
+                rotation = 58;
+                this.color = Color.web("#009587");
+                break;
         }
 
         this.node = createRect();
@@ -71,8 +59,6 @@ public class Goal {
     private Node createRect() {
         Rectangle r = new Rectangle();
 
-        //r.getTransforms().add(new Rotate(90, topLeftX + (width / 2), topLeftY + (height / 2)));
-        //r.getTransforms().add(new Rotate(rotation, topLeftX, topLeftY));
         r.setWidth(width);
         r.setHeight(height);
         r.setFill(color);
@@ -88,11 +74,6 @@ public class Goal {
         System.out.println("Value2: " + (int) Math.floor(Utils.toPixelPosX(topLeftY)));
         System.out.println("LAYOUT: " + Utils.pixelEngineToFrame((int) Math.floor(Utils.toPixelPosX(topLeftY))));
 
-//        Shape s = (Shape) r;
-//        AffineTransform t = s.getr
-//        t.rotate(Math.toRadians(thetaDegrees), shape.getCenter().x, shape.getCenter().y);
-//        shape.setAffineTransform(t);
-        // change colour
         return r;
     }
 

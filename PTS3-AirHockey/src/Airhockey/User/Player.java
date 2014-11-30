@@ -16,9 +16,11 @@ public class Player {
     private int id;
     private int score = 20;
     private Bat bat;
+    public User user;
 
-    public Player(int id) {
+    public Player(int id, User user) {
         this.id = id;
+        this.user = user;
     }
 
     public void upScore() {

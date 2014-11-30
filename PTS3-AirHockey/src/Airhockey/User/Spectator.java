@@ -9,6 +9,6 @@ package Airhockey.User;
  *
  * @author Roel
  */
-public class Spectator extends User {
-
-}
+//public class Spectator extends User {
+//
+//}

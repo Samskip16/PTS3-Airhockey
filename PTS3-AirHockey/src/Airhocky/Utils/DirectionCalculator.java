@@ -1,4 +1,4 @@
-package Airhockey.Main;
+package Airhocky.Utils;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

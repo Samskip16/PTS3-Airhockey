@@ -1,4 +1,4 @@
-package Airhockey.Main;
+package Airhocky.Utils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

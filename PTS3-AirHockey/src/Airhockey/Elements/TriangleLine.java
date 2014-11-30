@@ -1,10 +1,10 @@
 package Airhockey.Elements;
 
-import Airhockey.Main.Utils;
+import Airhocky.Utils.Utils;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.transform.Rotate;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Vec2;
@@ -22,7 +22,7 @@ import org.jbox2d.dynamics.FixtureDef;
  *
  * @author Sam
  */
-public class Triangle {
+public class TriangleLine {
 
     public Node node;
 
@@ -42,7 +42,7 @@ public class Triangle {
 
     private BodyType bodyType;
 
-    public Triangle(int screenHeight, float positionXL, float positionYL, int positionXR, int positionYR) {
+    public TriangleLine(int screenHeight, float positionXL, float positionYL, int positionXR, int positionYR) {
 //        width = (int) Math.floor(screenHeight * 1.1);  
 //        height = (int) Math.floor(Math.tan(45) * (width / 2));
 //        bottomLineY = (int) Math.floor(screenHeight - (screenHeight * 0.1)); 
@@ -86,6 +86,8 @@ public class Triangle {
         Group LineAB = new Group();
         //Line AAb = new Line(Utils.toPixelPosX(A.x), Utils.toPixelPosY(A.y), Utils.toPixelPosX(Ab.x), Utils.toPixelPosY(Ab.y));
         Line ABA = new Line(Utils.toPixelPosX(positionXL) + 50, Utils.toPixelPosY(positionYL), Utils.toPixelPosX(positionXR) + 50, Utils.toPixelPosY(positionYR));
+        ABA.setStroke(Color.PINK);
+        ABA.setStrokeWidth(3.0);
         //LineAB.getChildren().add(AAb);
         LineAB.getChildren().add(ABA);
 

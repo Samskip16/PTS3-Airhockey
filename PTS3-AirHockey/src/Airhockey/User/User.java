@@ -15,6 +15,10 @@ public class User {
     private String password;
     private double rating;
 
+    public User(String username){
+       this.username = username;
+    }
+    
     public String getUsername() {
         return username;
     }

@@ -1,6 +1,6 @@
 package Airhockey.Elements;
 
-import Airhockey.Main.Utils;
+import Airhocky.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -8,6 +8,7 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
 /*
@@ -30,6 +31,9 @@ public class Puck {
     private float radius = 20;
 
     private BodyType bodyType;
+    
+    public Body body;
+    public FixtureDef fd;
 
     public Puck(float positionX, float positionY) {
         //this.diameter = (int) Math.floor((double) triangleWidth * 0.04);
@@ -61,7 +65,7 @@ public class Puck {
         cs.m_radius = radius * 0.1f;  //We need to convert radius to JBox2D equivalent
 
         // Create a fixture for puck
-        FixtureDef fd = new FixtureDef();
+        fd = new FixtureDef();
         fd.shape = cs;
         fd.density = 0.0f;
         fd.friction = 0.0f;
@@ -71,10 +75,14 @@ public class Puck {
          * Virtual invisible JBox2D body of puck. Bodies have velocity and position. 
          * Forces, torques, and impulses can be applied to these bodies.
          */
-        Body body = Utils.world.createBody(bd);
+        body = Utils.world.createBody(bd);
         body.createFixture(fd);
         puck.setUserData(body);
         return puck;
+    }
+    
+    public Fixture getFixture(){
+        return body.getFixtureList();
     }
 
 }
