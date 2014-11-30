@@ -1,6 +1,6 @@
 package Airhockey.Main;
 
-import Airhocky.Utils.ScoreCalculator;
+import Airhockey.Utils.ScoreCalculator;
 import Airhockey.Elements.Bat;
 import Airhockey.User.Player;
 import Airhockey.User.User;

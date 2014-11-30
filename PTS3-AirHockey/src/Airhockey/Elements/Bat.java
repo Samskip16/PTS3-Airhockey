@@ -1,6 +1,6 @@
 package Airhockey.Elements;
 
-import Airhocky.Utils.Utils;
+import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
